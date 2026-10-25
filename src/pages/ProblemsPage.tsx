@@ -1,102 +1,181 @@
-import { Search, Filter, ListChecks } from 'lucide-react'
-import Card from '@/components/common/Card'
-import Badge from '@/components/common/Badge'
-import Button from '@/components/common/Button'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ExternalLink, RotateCcw } from 'lucide-react'
+import {
+  Card,
+  Badge,
+  Button,
+  SearchField,
+  Dropdown,
+  SectionHeading,
+  EmptyState,
+} from '@/components/common'
 
-const sampleProblems = [
-  { id: 1, title: 'Two Sum', difficulty: 'Easy', topic: 'Arrays', status: 'solved' },
-  { id: 2, title: 'Reverse Linked List', difficulty: 'Easy', topic: 'Linked Lists', status: 'unsolved' },
-  { id: 3, title: 'Binary Search', difficulty: 'Easy', topic: 'Search', status: 'unsolved' },
-  { id: 4, title: 'Merge Intervals', difficulty: 'Medium', topic: 'Arrays', status: 'unsolved' },
-  { id: 5, title: 'Valid Parentheses', difficulty: 'Easy', topic: 'Stack', status: 'solved' },
-  { id: 6, title: 'Maximum Subarray (Kadane)', difficulty: 'Medium', topic: 'Dynamic Programming', status: 'unsolved' },
-  { id: 7, title: 'Longest Palindromic Substring', difficulty: 'Medium', topic: 'Strings', status: 'unsolved' },
-  { id: 8, title: 'Word Break', difficulty: 'Medium', topic: 'Dynamic Programming', status: 'unsolved' },
-  { id: 9, title: 'Median of Two Sorted Arrays', difficulty: 'Hard', topic: 'Binary Search', status: 'unsolved' },
-  { id: 10, title: 'N-Queens', difficulty: 'Hard', topic: 'Backtracking', status: 'unsolved' },
+const allProblems = [
+  { id: 1, title: 'Two Sum in Java', difficulty: 'Easy', topic: 'Arrays & Hash Maps', status: 'solved', acceptance: '53.2%' },
+  { id: 2, title: 'Reverse Linked List', difficulty: 'Easy', topic: 'Linked Lists', status: 'unsolved', acceptance: '74.8%' },
+  { id: 3, title: 'Binary Search Implementation', difficulty: 'Easy', topic: 'Binary Search', status: 'unsolved', acceptance: '56.9%' },
+  { id: 4, title: 'Merge Intervals', difficulty: 'Medium', topic: 'Arrays & Sorting', status: 'unsolved', acceptance: '47.1%' },
+  { id: 5, title: 'Valid Parentheses', difficulty: 'Easy', topic: 'Stack', status: 'solved', acceptance: '40.6%' },
+  { id: 6, title: 'Maximum Subarray (Kadane)', difficulty: 'Medium', topic: 'Dynamic Programming', status: 'unsolved', acceptance: '50.8%' },
+  { id: 7, title: 'Longest Palindromic Substring', difficulty: 'Medium', topic: 'Strings', status: 'unsolved', acceptance: '33.9%' },
+  { id: 8, title: 'Word Break in Java', difficulty: 'Medium', topic: 'Dynamic Programming', status: 'unsolved', acceptance: '46.3%' },
+  { id: 9, title: 'Median of Two Sorted Arrays', difficulty: 'Hard', topic: 'Binary Search', status: 'unsolved', acceptance: '39.8%' },
+  { id: 10, title: 'N-Queens Backtracking', difficulty: 'Hard', topic: 'Backtracking', status: 'unsolved', acceptance: '67.4%' },
 ]
 
-const difficultyVariant: Record<string, 'easy' | 'medium' | 'hard'> = {
-  Easy: 'easy',
-  Medium: 'medium',
-  Hard: 'hard',
-}
+const difficultyOptions = [
+  { value: 'ALL', label: 'All Difficulties' },
+  { value: 'Easy', label: 'Easy' },
+  { value: 'Medium', label: 'Medium' },
+  { value: 'Hard', label: 'Hard' },
+]
 
 export default function ProblemsPage() {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedDifficulty, setSelectedDifficulty] = useState('ALL')
+
+  const filteredProblems = allProblems.filter((p) => {
+    const matchesQuery =
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.topic.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesDiff =
+      selectedDifficulty === 'ALL' || p.difficulty === selectedDifficulty
+
+    return matchesQuery && matchesDiff
+  })
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-      {/* Header */}
+      {/* Section Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <ListChecks size={20} className="text-blue-400" />
-          <h1 className="text-2xl font-bold text-white">Problems</h1>
-        </div>
-        <p className="text-slate-500 text-sm">
-          Practice Java DSA problems organised by topic and difficulty. Full implementation coming soon.
-        </p>
+        <SectionHeading
+          as="h1"
+          title="Problem Library"
+          badge={
+            <Badge variant="blue" className="text-xs">
+              150+ Java Problems
+            </Badge>
+          }
+          description="Practice LeetCode-style Java problems categorized by pattern, topic, and difficulty. Select any problem to enter the interactive workbench."
+        />
       </div>
 
-      {/* Filter bar (placeholder) */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="flex-1 relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Search problems... (coming soon)"
-            disabled
-            className="w-full pl-9 pr-4 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-sm placeholder-slate-600 cursor-not-allowed"
+      {/* Filter and Search Bar using Reusable Components */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6 items-center">
+        <div className="flex-1 w-full">
+          <SearchField
+            placeholder="Search problems by name or topic (e.g. Arrays, Two Sum)..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button variant="secondary" size="sm" disabled>
-          <Filter size={14} />
-          Filters
-        </Button>
-        <div className="flex gap-2">
-          {['All', 'Easy', 'Medium', 'Hard'].map((d) => (
-            <button
-              key={d}
-              disabled
-              className="px-3 py-1.5 text-xs rounded-md border border-slate-800 text-slate-500 bg-slate-900/60 cursor-not-allowed"
-            >
-              {d}
-            </button>
-          ))}
+
+        <div className="w-full sm:w-52 shrink-0">
+          <Dropdown
+            options={difficultyOptions}
+            value={selectedDifficulty}
+            onChange={(val) => setSelectedDifficulty(val)}
+          />
         </div>
+
+        {(searchQuery || selectedDifficulty !== 'ALL') && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSearchQuery('')
+              setSelectedDifficulty('ALL')
+            }}
+            leftIcon={<RotateCcw size={14} />}
+          >
+            Reset
+          </Button>
+        )}
       </div>
 
-      {/* Problem list */}
-      <Card className="overflow-hidden">
-        <div className="divide-y divide-slate-800/60">
-          {/* Table header */}
-          <div className="grid grid-cols-[auto_1fr_auto_auto] gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-600">
-            <span>#</span>
-            <span>Title</span>
-            <span className="hidden sm:block">Topic</span>
-            <span>Difficulty</span>
-          </div>
-          {sampleProblems.map((p) => (
-            <div
-              key={p.id}
-              className="grid grid-cols-[auto_1fr_auto_auto] gap-4 px-5 py-3.5 items-center hover:bg-slate-800/30 transition-colors duration-100 cursor-not-allowed opacity-90"
+      {/* Problem list or Empty State */}
+      {filteredProblems.length === 0 ? (
+        <EmptyState
+          title="No problems found"
+          description={`No problems match your filter "${searchQuery}". Try adjusting your keywords or clearing the difficulty filter.`}
+          action={
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                setSearchQuery('')
+                setSelectedDifficulty('ALL')
+              }}
             >
-              <span className="text-xs font-mono text-slate-600 w-6 text-right">{p.id}</span>
-              <div className="flex items-center gap-2 min-w-0">
-                {p.status === 'solved' && (
-                  <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" title="Solved" />
-                )}
-                <span className="text-sm text-slate-300 truncate">{p.title}</span>
-              </div>
-              <span className="hidden sm:block text-xs text-slate-500 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
-                {p.topic}
-              </span>
-              <Badge variant={difficultyVariant[p.difficulty]}>{p.difficulty}</Badge>
+              Clear filters
+            </Button>
+          }
+        />
+      ) : (
+        <Card className="overflow-hidden">
+          <div className="divide-y divide-slate-800/60">
+            {/* Table header */}
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 bg-[var(--bg-elevated)]/40">
+              <span className="w-8 text-right">#</span>
+              <span>Title</span>
+              <span className="hidden md:block">Topic</span>
+              <span className="hidden sm:block">Acceptance</span>
+              <span>Difficulty</span>
             </div>
-          ))}
-        </div>
-      </Card>
 
-      <p className="text-center text-slate-600 text-xs mt-6 font-mono">
-        Showing 10 of 300+ problems · Full problem set and code editor coming in a later screen.
+            {filteredProblems.map((p) => (
+              <Link
+                key={p.id}
+                to="/workspace"
+                className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 px-5 py-3.5 items-center hover:bg-slate-800/40 transition-colors duration-150 group"
+              >
+                <span className="text-xs font-mono text-slate-500 w-8 text-right">
+                  {p.id}
+                </span>
+
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {p.status === 'solved' ? (
+                    <span
+                      className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"
+                      title="Solved"
+                    />
+                  ) : (
+                    <span
+                      className="w-2 h-2 rounded-full border border-slate-600 shrink-0"
+                      title="Unsolved"
+                    />
+                  )}
+                  <span className="text-sm text-slate-200 group-hover:text-blue-400 font-medium transition-colors truncate">
+                    {p.title}
+                  </span>
+                  <ExternalLink
+                    size={12}
+                    className="text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline"
+                  />
+                </div>
+
+                <span className="hidden md:block text-xs text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-700/60 font-mono">
+                  {p.topic}
+                </span>
+
+                <span className="hidden sm:block text-xs font-mono text-slate-500">
+                  {p.acceptance}
+                </span>
+
+                <Badge
+                  variant={p.difficulty.toLowerCase() as 'easy' | 'medium' | 'hard'}
+                >
+                  {p.difficulty}
+                </Badge>
+              </Link>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      <p className="text-center text-slate-500 text-xs mt-6 font-mono">
+        Showing {filteredProblems.length} of {allProblems.length} curated problems · Click any problem to open the interactive coding workspace.
       </p>
     </div>
   )

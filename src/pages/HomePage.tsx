@@ -8,49 +8,48 @@ import {
   Cpu,
   Flame,
   Target,
+  Terminal,
 } from 'lucide-react'
-import Card from '@/components/common/Card'
-import Button from '@/components/common/Button'
-import Badge from '@/components/common/Badge'
+import { Card, Button, Badge } from '@/components/common'
 
 const stats = [
   { label: 'Curated Problems', value: '300+', icon: <ListChecks size={18} className="text-blue-400" /> },
   { label: 'Course Months', value: '6', icon: <CalendarDays size={18} className="text-violet-400" /> },
   { label: 'DSA Topics', value: '40+', icon: <Cpu size={18} className="text-sky-400" /> },
-  { label: 'Streak Tracking', value: 'Daily', icon: <Flame size={18} className="text-orange-400" /> },
+  { label: 'Daily Streaks', value: '7 Days', icon: <Flame size={18} className="text-amber-400" /> },
 ]
 
 const features = [
   {
     icon: <ListChecks size={22} className="text-blue-400" />,
-    title: 'Structured Problem Set',
-    desc: 'Carefully curated Java DSA problems organised by topic and difficulty — from arrays to dynamic programming.',
+    title: 'Curated Java DSA Problems',
+    desc: 'LeetCode-style problems organized by pattern and difficulty — from arrays and two pointers to graphs and dynamic programming.',
     to: '/problems',
-    badge: '300+ Problems',
+    badge: '150+ Problems',
     badgeVariant: 'blue' as const,
   },
   {
     icon: <BookOpen size={22} className="text-violet-400" />,
-    title: '6-Month Java Course',
-    desc: 'A battle-tested roadmap that takes you from core Java fundamentals to advanced system design concepts.',
+    title: 'Six-Month Structured Course',
+    desc: 'A complete step-by-step roadmap that takes you from Java basics to deep algorithmic problem solving.',
     to: '/course',
-    badge: '6 Months',
+    badge: '24 Weeks',
     badgeVariant: 'violet' as const,
   },
   {
     icon: <CalendarDays size={22} className="text-sky-400" />,
     title: 'Interactive Study Timeline',
-    desc: 'Visualize your entire 6-month journey week by week and never lose track of where you stand.',
+    desc: 'Visualize your entire learning journey week by week, track completed milestones, and stay accountable.',
     to: '/timeline',
-    badge: 'Week by Week',
+    badge: 'Milestones',
     badgeVariant: 'outline' as const,
   },
   {
-    icon: <Target size={22} className="text-green-400" />,
-    title: 'Progress Dashboard',
-    desc: 'Track your solved problems, daily streaks, and overall course completion at a glance.',
+    icon: <Target size={22} className="text-emerald-400" />,
+    title: 'Student Progress Dashboard',
+    desc: 'Monitor your problem-solving velocity, active streaks, curriculum completion, and topic masteries.',
     to: '/dashboard',
-    badge: 'Coming Soon',
+    badge: 'Live Preview',
     badgeVariant: 'outline' as const,
   },
 ]
@@ -68,7 +67,7 @@ export default function HomePage() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16 text-center">
           <Badge variant="blue" className="mb-6 px-3 py-1 text-xs font-mono tracking-wider">
-            🚀 Screen 1 Foundation — More coming soon
+            ⚡ Structured Six-Month Java DSA Platform
           </Badge>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-5 leading-[1.1]">
@@ -79,23 +78,25 @@ export default function HomePage() {
           </h1>
 
           <p className="max-w-2xl mx-auto text-slate-400 text-base sm:text-lg leading-relaxed mb-10">
-            Java Study Mate is a LeetCode-style platform with a complete{' '}
-            <strong className="text-slate-300">6-month curriculum</strong>, curated DSA problems,
-            and an interactive timeline — built so you never wonder what to study next.
+            Java Study Mate is a LeetCode-style practice platform combined with a comprehensive{' '}
+            <strong className="text-slate-200">6-month Java course</strong>, curated DSA challenges,
+            and an interactive timeline — engineered so you always know what to master next.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/course">
-              <Button size="lg">
-                <BookOpen size={18} />
+              <Button size="lg" leftIcon={<BookOpen size={18} />}>
                 Start 6-Month Course
               </Button>
             </Link>
             <Link to="/problems">
-              <Button size="lg" variant="secondary">
-                <Code2 size={18} />
-                Browse Problems
-                <ArrowRight size={16} />
+              <Button size="lg" variant="secondary" leftIcon={<Code2 size={18} />} rightIcon={<ArrowRight size={16} />}>
+                Browse Problem Bank
+              </Button>
+            </Link>
+            <Link to="/workspace">
+              <Button size="lg" variant="outline" leftIcon={<Terminal size={18} />}>
+                Coding Workspace
               </Button>
             </Link>
           </div>
@@ -106,10 +107,10 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((s) => (
-            <Card key={s.label} className="p-5 flex flex-col gap-2">
+            <Card key={s.label} hover className="p-5 flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 {s.icon}
-                <span className="text-xs text-slate-500 font-medium">{s.label}</span>
+                <span className="text-xs text-slate-400 font-medium">{s.label}</span>
               </div>
               <span className="text-2xl font-bold text-white font-mono">{s.value}</span>
             </Card>
@@ -121,10 +122,10 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Everything you need to go from zero to hired
+            Everything you need to go from beginner to interview-ready
           </h2>
-          <p className="text-slate-500 max-w-lg mx-auto text-sm">
-            All platform features designed around the 6-month Java learning roadmap.
+          <p className="text-slate-400 max-w-lg mx-auto text-sm">
+            All platform features are built around a structured, systematic roadmap.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -140,9 +141,9 @@ export default function HomePage() {
                       <h3 className="font-semibold text-slate-100 text-sm">{f.title}</h3>
                       <Badge variant={f.badgeVariant}>{f.badge}</Badge>
                     </div>
-                    <p className="text-slate-500 text-xs leading-relaxed">{f.desc}</p>
+                    <p className="text-slate-400 text-xs leading-relaxed">{f.desc}</p>
                   </div>
-                  <ArrowRight size={16} className="text-slate-600 group-hover:text-slate-400 group-hover:translate-x-0.5 transition-all duration-200 shrink-0 mt-1" />
+                  <ArrowRight size={16} className="text-slate-500 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all duration-200 shrink-0 mt-1" />
                 </div>
               </Card>
             </Link>
@@ -154,15 +155,14 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
         <div className="rounded-2xl border border-blue-900/40 bg-gradient-to-br from-blue-950/60 to-violet-950/60 p-8 sm:p-12 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Ready to start your Java journey?
+            Ready to master Java programming?
           </h2>
           <p className="text-slate-400 mb-7 max-w-md mx-auto text-sm">
-            Join the roadmap, solve problems daily, and track your progress to interview-readiness.
+            Join the structured curriculum, write and test Java solutions, and track your streak daily.
           </p>
           <Link to="/register">
-            <Button size="lg">
+            <Button size="lg" rightIcon={<ArrowRight size={18} />}>
               Create Free Account
-              <ArrowRight size={18} />
             </Button>
           </Link>
         </div>

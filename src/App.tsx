@@ -1,5 +1,10 @@
+import { ThemeProvider } from '@/hooks/useTheme'
 import AppRouter from '@/routes/routes'
 
 export default function App() {
-  return <AppRouter />
+  return (
+    <ThemeProvider>
+      <AppRouter />
+    </ThemeProvider>
+  )
 }

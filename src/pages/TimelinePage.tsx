@@ -1,6 +1,5 @@
-import { CalendarDays, CheckCircle2, Circle, Clock } from 'lucide-react'
-import Card from '@/components/common/Card'
-import Badge from '@/components/common/Badge'
+import { CheckCircle2, Circle, Clock } from 'lucide-react'
+import { Card, Badge, SectionHeading, ProgressBar } from '@/components/common'
 
 const timelineData = [
   { month: 1, week: 1, title: 'Java Syntax & OOP Basics', status: 'done', problems: 8 },
@@ -30,39 +29,37 @@ export default function TimelinePage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <CalendarDays size={20} className="text-sky-400" />
-          <h1 className="text-2xl font-bold text-white">Study Timeline</h1>
-        </div>
-        <p className="text-slate-500 text-sm">
-          Your 24-week Java learning journey, broken down week by week. Full interactivity in a later screen.
-        </p>
+        <SectionHeading
+          as="h1"
+          title="Study Timeline"
+          badge={<Badge variant="blue">24-Week Schedule</Badge>}
+          description="Your structured 24-week Java roadmap broken down week by week to keep your learning consistent and pacing optimal."
+        />
       </div>
 
       {/* Progress overview */}
       <Card className="p-5 mb-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-400 font-medium">Overall Progress</span>
-              <span className="text-xs font-mono text-slate-400">{completedWeeks}/24 weeks</span>
-            </div>
-            <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all"
-                style={{ width: `${(completedWeeks / 24) * 100}%` }}
-              />
-            </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          <div className="flex-1 w-full">
+            <ProgressBar
+              value={completedWeeks}
+              max={24}
+              label="Overall Schedule Progress"
+              variant="blue"
+              size="md"
+              showLabel
+              showValue
+            />
           </div>
-          <div className="flex gap-4 text-xs text-slate-500 shrink-0">
+          <div className="flex gap-4 text-xs text-slate-400 shrink-0">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 size={12} className="text-green-500" /> Done
+              <CheckCircle2 size={13} className="text-emerald-400" /> Done
             </span>
             <span className="flex items-center gap-1.5">
-              <Clock size={12} className="text-blue-400" /> Current
+              <Clock size={13} className="text-blue-400" /> Current
             </span>
             <span className="flex items-center gap-1.5">
-              <Circle size={12} className="text-slate-600" /> Upcoming
+              <Circle size={13} className="text-slate-600" /> Upcoming
             </span>
           </div>
         </div>
@@ -97,7 +94,7 @@ export default function TimelinePage() {
                   {/* Icon */}
                   <div className="relative z-10 shrink-0 mt-0.5 hidden sm:flex">
                     {week.status === 'done' ? (
-                      <CheckCircle2 size={20} className="text-green-500" />
+                      <CheckCircle2 size={20} className="text-emerald-400" />
                     ) : week.status === 'current' ? (
                       <div className="w-5 h-5 rounded-full bg-blue-600 border-2 border-blue-300 flex items-center justify-center">
                         <div className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -108,37 +105,39 @@ export default function TimelinePage() {
                   </div>
 
                   <Card
+                    hover
                     className={`flex-1 p-4 ${
                       week.status === 'current'
                         ? 'border-blue-800/60 bg-blue-950/30'
                         : week.status === 'done'
-                        ? 'opacity-70'
+                        ? 'opacity-80'
                         : ''
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-xs font-mono text-slate-600 shrink-0">
+                        <span className="text-xs font-mono text-slate-500 shrink-0">
                           W{week.week}
                         </span>
-                        <span
-                          className={`text-sm font-medium truncate ${
-                            week.status === 'done'
-                              ? 'text-slate-500 line-through'
-                              : week.status === 'current'
-                              ? 'text-blue-300'
-                              : 'text-slate-300'
-                          }`}
-                        >
+                        <span className="text-sm font-medium text-slate-200 truncate">
                           {week.title}
                         </span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant="outline" className="text-[11px]">
+                          {week.problems} problems
+                        </Badge>
+                        {week.status === 'done' && (
+                          <Badge variant="easy" className="text-[10px]">
+                            COMPLETED
+                          </Badge>
+                        )}
                         {week.status === 'current' && (
-                          <Badge variant="blue" className="shrink-0">Active</Badge>
+                          <Badge variant="blue" className="text-[10px]">
+                            IN PROGRESS
+                          </Badge>
                         )}
                       </div>
-                      <span className="text-xs text-slate-600 shrink-0">
-                        {week.problems} problems
-                      </span>
                     </div>
                   </Card>
                 </div>
@@ -147,10 +146,6 @@ export default function TimelinePage() {
           })}
         </div>
       </div>
-
-      <p className="text-center text-slate-600 text-xs mt-10 font-mono">
-        Showing months 1–3 (12 weeks) · Full 24-week timeline and interactivity coming in a later screen.
-      </p>
     </div>
   )
 }

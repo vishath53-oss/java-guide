@@ -2,6 +2,8 @@ import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import RootLayout from '@/components/layout/RootLayout'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import CodingLayout from '@/components/layout/CodingLayout'
 import LoadingPage from '@/pages/LoadingPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
@@ -41,10 +43,6 @@ const router = createBrowserRouter([
         element: <SuspenseWrapper><TimelinePage /></SuspenseWrapper>,
       },
       {
-        path: 'dashboard',
-        element: <SuspenseWrapper><DashboardPage /></SuspenseWrapper>,
-      },
-      {
         path: 'login',
         element: <SuspenseWrapper><LoginPage /></SuspenseWrapper>,
       },
@@ -53,6 +51,20 @@ const router = createBrowserRouter([
         element: <SuspenseWrapper><RegisterPage /></SuspenseWrapper>,
       },
     ],
+  },
+  {
+    path: '/dashboard',
+    element: (
+      <DashboardLayout>
+        <SuspenseWrapper>
+          <DashboardPage />
+        </SuspenseWrapper>
+      </DashboardLayout>
+    ),
+  },
+  {
+    path: '/workspace',
+    element: <CodingLayout />,
   },
   {
     path: '*',

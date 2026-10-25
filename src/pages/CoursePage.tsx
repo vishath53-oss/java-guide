@@ -1,12 +1,12 @@
-import { BookOpen, CheckCircle2, Clock } from 'lucide-react'
-import Card from '@/components/common/Card'
-import Badge from '@/components/common/Badge'
+import { BookOpen, CheckCircle2, Clock, ArrowRight } from 'lucide-react'
+import { Card, Badge, SectionHeading, Button } from '@/components/common'
+import { Link } from 'react-router-dom'
 
 const months = [
   {
     month: 1,
     title: 'Java Foundations',
-    tagline: 'Core language, OOP, collections, I/O, and basic data structures.',
+    tagline: 'Core language syntax, OOP principles, collections, I/O, and basic data structures.',
     weeks: 4,
     problems: 40,
     color: 'from-blue-600 to-blue-800',
@@ -16,7 +16,7 @@ const months = [
   {
     month: 2,
     title: 'Data Structures Deep Dive',
-    tagline: 'Arrays, linked lists, stacks, queues, hash maps, trees, and heaps.',
+    tagline: 'Arrays, linked lists, stacks, queues, hash maps, binary trees, and priority heaps.',
     weeks: 4,
     problems: 55,
     color: 'from-violet-600 to-violet-800',
@@ -25,8 +25,8 @@ const months = [
   },
   {
     month: 3,
-    title: 'Algorithms & Sorting',
-    tagline: 'Searching, sorting, recursion, backtracking, and greedy algorithms.',
+    title: 'Algorithms & Sorting Patterns',
+    tagline: 'Binary search, two pointers, sliding window, recursion, and greedy algorithms.',
     weeks: 4,
     problems: 50,
     color: 'from-sky-600 to-sky-800',
@@ -35,8 +35,8 @@ const months = [
   },
   {
     month: 4,
-    title: 'Dynamic Programming',
-    tagline: 'Memoization, tabulation, 0/1 knapsack, LCS, LIS, and classic DP patterns.',
+    title: 'Dynamic Programming Mastery',
+    tagline: 'Memoization, 1D/2D tabulation, 0/1 knapsack, LCS, LIS, and classic state transitions.',
     weeks: 4,
     problems: 50,
     color: 'from-emerald-600 to-emerald-800',
@@ -46,7 +46,7 @@ const months = [
   {
     month: 5,
     title: 'Graphs & Advanced Structures',
-    tagline: 'BFS, DFS, shortest paths, MST, tries, segment trees, and union-find.',
+    tagline: 'BFS, DFS, Dijkstra, topological sort, tries, segment trees, and union-find.',
     weeks: 4,
     problems: 55,
     color: 'from-amber-600 to-amber-800',
@@ -55,8 +55,8 @@ const months = [
   },
   {
     month: 6,
-    title: 'System Design & Interview Prep',
-    tagline: 'Design patterns, SOLID, concurrency, scalability, and mock interview problems.',
+    title: 'System Design & Interview Readiness',
+    tagline: 'Java concurrency, design patterns, mock tech rounds, and optimal complexity trade-offs.',
     weeks: 4,
     problems: 50,
     color: 'from-rose-600 to-rose-800',
@@ -70,28 +70,35 @@ export default function CoursePage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
       {/* Header */}
       <div className="mb-10">
-        <div className="flex items-center gap-2 mb-1">
-          <BookOpen size={20} className="text-violet-400" />
-          <h1 className="text-2xl font-bold text-white">6-Month Java Course</h1>
-        </div>
-        <p className="text-slate-500 text-sm max-w-2xl">
-          A structured, battle-tested curriculum that takes you from Java basics to interview-ready in 6 months.
-          Detailed week-by-week lessons and video content will be added in upcoming screens.
-        </p>
+        <SectionHeading
+          as="h1"
+          title="Six-Month Java Curriculum"
+          badge={<Badge variant="violet">Structured Roadmap</Badge>}
+          description="A battle-tested curriculum engineered to take you from foundational Java syntax to solving hard LeetCode problems and passing technical interviews."
+          action={
+            <Link to="/timeline">
+              <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} />}>
+                View Timeline
+              </Button>
+            </Link>
+          }
+        />
       </div>
 
       {/* Summary bar */}
-      <div className="grid grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         {[
-          { label: 'Total Months', value: '6', icon: <Clock size={16} className="text-blue-400" /> },
-          { label: 'Total Weeks', value: '24', icon: <CheckCircle2 size={16} className="text-green-400" /> },
-          { label: 'Total Problems', value: '300+', icon: <BookOpen size={16} className="text-violet-400" /> },
+          { label: 'Total Duration', value: '6 Months', icon: <Clock size={18} className="text-blue-400" /> },
+          { label: 'Structured Weeks', value: '24 Weeks', icon: <CheckCircle2 size={18} className="text-emerald-400" /> },
+          { label: 'DSA Problems', value: '300+ Problems', icon: <BookOpen size={18} className="text-violet-400" /> },
         ].map((s) => (
-          <Card key={s.label} className="p-4 flex items-center gap-3">
-            {s.icon}
+          <Card key={s.label} className="p-4 flex items-center gap-3.5">
+            <div className="p-2.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-default)]">
+              {s.icon}
+            </div>
             <div>
-              <div className="text-lg font-bold text-white font-mono">{s.value}</div>
-              <div className="text-xs text-slate-500">{s.label}</div>
+              <div className="text-lg font-bold text-slate-100 font-mono">{s.value}</div>
+              <div className="text-xs text-slate-400">{s.label}</div>
             </div>
           </Card>
         ))}
@@ -105,28 +112,32 @@ export default function CoursePage() {
             <div className={`h-1.5 bg-gradient-to-r ${m.color}`} />
             <div className="p-5">
               <div className="flex items-center justify-between mb-3">
-                <span className={`text-xs font-mono font-semibold ${m.accent}`}>Month {m.month}</span>
+                <span className={`text-xs font-mono font-semibold ${m.accent}`}>
+                  Month {m.month}
+                </span>
                 <Badge variant="outline">{m.problems} problems</Badge>
               </div>
               <h3 className="font-bold text-slate-100 mb-1.5 text-sm">{m.title}</h3>
-              <p className="text-slate-500 text-xs leading-relaxed mb-4">{m.tagline}</p>
-              <div className="flex items-center gap-3 text-xs text-slate-600">
+              <p className="text-slate-400 text-xs leading-relaxed mb-4">{m.tagline}</p>
+              <div className="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-800/60">
                 <span className="flex items-center gap-1">
-                  <Clock size={11} />
+                  <Clock size={12} />
                   {m.weeks} weeks
                 </span>
-                <span className="flex items-center gap-1">
-                  <CheckCircle2 size={11} />
-                  Coming soon
-                </span>
+                <Link
+                  to="/problems"
+                  className="text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1"
+                >
+                  Explore &rarr;
+                </Link>
               </div>
             </div>
           </Card>
         ))}
       </div>
 
-      <p className="text-center text-slate-600 text-xs mt-10 font-mono">
-        Full lesson content, code examples, and quizzes will be added in a later screen.
+      <p className="text-center text-slate-500 text-xs mt-10 font-mono">
+        Curriculum structured for consistent weekly milestones · Detailed syllabus coming in next phase.
       </p>
     </div>
   )
