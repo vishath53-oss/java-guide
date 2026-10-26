@@ -14,11 +14,12 @@ const accountLinks = [
   { label: 'Register', to: '/register' },
 ]
 
-export default function Footer() {
-  const currentYear = new Date().getFullYear()
+const currentYear = new Date().getFullYear()
 
+export default function Footer() {
   return (
     <footer className="border-t border-slate-800/60 bg-slate-950/80 mt-auto">
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
           {/* Brand column */}
