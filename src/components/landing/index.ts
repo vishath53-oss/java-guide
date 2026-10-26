@@ -1,0 +1,8 @@
+export { default as HeroSection } from './HeroSection'
+export { default as CodeEditorPreview } from './CodeEditorPreview'
+export { default as PlatformStats } from './PlatformStats'
+export { default as CoreFeatures } from './CoreFeatures'
+export { default as RoadmapPreview } from './RoadmapPreview'
+export { default as DifficultySection } from './DifficultySection'
+export { default as HowItWorks } from './HowItWorks'
+export { default as CtaSection } from './CtaSection'
