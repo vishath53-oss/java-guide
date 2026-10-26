@@ -3,9 +3,10 @@ import { cn } from '@/lib/utils'
 export interface CheckboxProps {
   checked?: boolean
   onChange?: (checked: boolean) => void
-  label?: string
+  label?: React.ReactNode
   id?: string
   disabled?: boolean
+  error?: string
   className?: string
 }
 
@@ -15,19 +16,22 @@ export default function Checkbox({
   label,
   id,
   disabled = false,
+  error,
   className,
 }: CheckboxProps) {
-  const checkId = id || (label ? `cb-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined)
+  const checkId = id || 'cb-input'
 
   return (
-    <label
-      htmlFor={checkId}
-      className={cn(
-        'inline-flex items-center gap-2.5 cursor-pointer select-none',
-        disabled && 'opacity-50 cursor-not-allowed',
-        className
-      )}
-    >
+    <div className="flex flex-col gap-1">
+      <label
+        htmlFor={checkId}
+        className={cn(
+          'inline-flex items-center gap-2.5 cursor-pointer select-none',
+          disabled && 'opacity-50 cursor-not-allowed',
+          className
+        )}
+      >
+
       <div className="relative flex items-center justify-center">
         <input
           id={checkId}
@@ -67,5 +71,12 @@ export default function Checkbox({
         <span className="text-sm text-slate-300">{label}</span>
       )}
     </label>
+    {error && (
+      <p id={`${checkId}-error`} className="text-xs text-[var(--color-error)]" role="alert">
+        {error}
+      </p>
+    )}
+  </div>
   )
 }
+

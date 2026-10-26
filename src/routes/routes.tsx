@@ -15,6 +15,7 @@ const TimelinePage = lazy(() => import('@/pages/TimelinePage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'))
+const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'))
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<LoadingPage />}>{children}</Suspense>
@@ -50,8 +51,13 @@ const router = createBrowserRouter([
         path: 'register',
         element: <SuspenseWrapper><RegisterPage /></SuspenseWrapper>,
       },
+      {
+        path: 'forgot-password',
+        element: <SuspenseWrapper><ForgotPasswordPage /></SuspenseWrapper>,
+      },
     ],
   },
+
   {
     path: '/dashboard',
     element: (

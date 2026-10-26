@@ -1,96 +1,171 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LogIn, Code2, Mail } from 'lucide-react'
-import {
-  Card,
-  Button,
-  TextInput,
-  PasswordInput,
-  Checkbox,
-} from '@/components/common'
+import { LogIn, Mail, ArrowRight } from 'lucide-react'
+import { usePageTitle } from '@/hooks/usePageTitle'
+import { Button, TextInput, PasswordInput, Checkbox } from '@/components/common'
+import AuthBranding from '@/components/auth/AuthBranding'
+import AuthAlert from '@/components/auth/AuthAlert'
 
 export default function LoginPage() {
+  usePageTitle('Sign In')
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
 
+  // Validation errors
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [demoMessage, setDemoMessage] = useState<string | null>(null)
+
+  const validate = () => {
+    const newErrors: { email?: string; password?: string } = {}
+
+    // Email validation
+    if (!email.trim()) {
+      newErrors.email = 'Email address is required.'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      newErrors.email = 'Please enter a valid email address.'
+    }
+
+    // Password validation
+    if (!password) {
+      newErrors.password = 'Password is required.'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setDemoMessage(null)
+
+    if (!validate()) return
+
+    setIsSubmitting(true)
+
+    // Simulate frontend validation response
+    setTimeout(() => {
+      setIsSubmitting(false)
+      setDemoMessage(
+        'Demonstration mode: Form validated successfully. Authentication will be connected in a later phase.'
+      )
+    }, 600)
+  }
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        {/* Brand mark */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center shadow-lg shadow-blue-500/20 mb-3">
-            <Code2 size={22} className="text-white" />
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 sm:px-6 py-10 sm:py-14">
+      {/* Centered two-column card */}
+      <div className="w-full max-w-4xl rounded-2xl border border-slate-800/80 bg-slate-950/80 backdrop-blur-md shadow-2xl shadow-black/50 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[560px]">
+          {/* Left section — Branding */}
+          <div className="lg:col-span-5">
+            <AuthBranding
+              heading="Welcome Back!"
+              description="Continue your Java learning journey and keep building your programming skills."
+            />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-1">Welcome back</h1>
-          <p className="text-slate-400 text-sm text-center">
-            Sign in to continue your Java learning journey.
-          </p>
-        </div>
 
-        <Card className="p-6">
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="flex flex-col gap-4"
-            aria-label="Login form"
-          >
-            <TextInput
-              id="login-email"
-              type="email"
-              label="Email Address"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              leftIcon={<Mail size={16} />}
-            />
+          {/* Right section — Login Form */}
+          <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+            <div className="max-w-md w-full mx-auto">
+              <div className="mb-6">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
+                  Sign in to Java Study Mate
+                </h1>
+                <p className="text-slate-400 text-sm">
+                  Enter your details to continue learning.
+                </p>
+              </div>
 
-            <PasswordInput
-              id="login-password"
-              label="Password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+              {/* Demonstration message notification */}
+              {demoMessage && (
+                <div className="mb-5">
+                  <AuthAlert type="info" message={demoMessage} />
+                </div>
+              )}
 
-            <div className="flex items-center justify-between">
-              <Checkbox
-                id="remember-me"
-                label="Remember me"
-                checked={rememberMe}
-                onChange={setRememberMe}
-              />
-              <span className="text-xs text-blue-400 hover:text-blue-300 cursor-pointer">
-                Forgot password?
-              </span>
+              <form onSubmit={handleSubmit} className="space-y-4" noValidate aria-label="Login form">
+                {/* Email Address */}
+                <TextInput
+                  id="login-email"
+                  type="email"
+                  label="Email Address"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }))
+                  }}
+                  error={errors.email}
+                  leftIcon={<Mail size={16} />}
+                  autoComplete="email"
+                  disabled={isSubmitting}
+                />
+
+                {/* Password with visibility toggle */}
+                <PasswordInput
+                  id="login-password"
+                  label="Password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }))
+                  }}
+                  error={errors.password}
+                  autoComplete="current-password"
+                  disabled={isSubmitting}
+                />
+
+                {/* Remember me & Forgot password */}
+                <div className="flex items-center justify-between pt-1">
+                  <Checkbox
+                    id="remember-me"
+                    label="Remember me"
+                    checked={rememberMe}
+                    onChange={setRememberMe}
+                    disabled={isSubmitting}
+                  />
+
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
+                {/* Submit button */}
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full justify-center mt-2"
+                  isLoading={isSubmitting}
+                  leftIcon={<LogIn size={18} />}
+                  rightIcon={<ArrowRight size={16} />}
+                >
+                  Sign In
+                </Button>
+              </form>
+
+              {/* Navigation link to register */}
+              <div className="mt-8 pt-6 border-t border-slate-800/60 text-center">
+                <p className="text-slate-400 text-sm">
+                  Don&apos;t have an account?{' '}
+                  <Link
+                    to="/register"
+                    className="text-blue-400 hover:text-blue-300 font-semibold transition-colors inline-flex items-center gap-1"
+                  >
+                    <span>Create an account</span>
+                    <ArrowRight size={14} />
+                  </Link>
+                </p>
+              </div>
             </div>
-
-            <Button
-              type="submit"
-              size="md"
-              className="mt-1 w-full"
-              leftIcon={<LogIn size={16} />}
-              onClick={() => {
-                alert('Authentication will be integrated in a subsequent backend phase.')
-              }}
-            >
-              Sign In
-            </Button>
-
-            <p className="text-center text-xs text-slate-500 font-mono">
-              Demo preview · Auth connects in later screen
-            </p>
-          </form>
-        </Card>
-
-        <p className="text-center text-slate-400 text-sm mt-5">
-          Don&apos;t have an account?{' '}
-          <Link
-            to="/register"
-            className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
-          >
-            Create account
-          </Link>
-        </p>
+          </div>
+        </div>
       </div>
     </div>
   )
