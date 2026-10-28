@@ -1,46 +1,53 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { KeyRound, Mail, ArrowLeft, ArrowRight } from 'lucide-react'
+import { KeyRound, Mail, ArrowLeft, Send } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { Button, TextInput, Card } from '@/components/common'
 import AuthAlert from '@/components/auth/AuthAlert'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function ForgotPasswordPage() {
-  usePageTitle('Reset Your Password')
+  usePageTitle('Reset Password')
+  const { resetPassword } = useAuth()
 
   const [email, setEmail] = useState('')
-  const [error, setError] = useState<string | undefined>()
+  const [emailError, setEmailError] = useState<string | undefined>()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [demoMessage, setDemoMessage] = useState<string | null>(null)
+  const [serverError, setServerError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
-  const validate = () => {
-    if (!email.trim()) {
-      setError('Email address is required.')
-      return false
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setError('Please enter a valid email address.')
-      return false
-    }
-    setError(undefined)
-    return true
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setDemoMessage(null)
+    setEmailError(undefined)
+    setServerError(null)
+    setSuccessMessage(null)
 
-    if (!validate()) return
+    if (!email.trim()) {
+      setEmailError('Email address is required.')
+      return
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setEmailError('Please enter a valid email address.')
+      return
+    }
 
     setIsSubmitting(true)
 
-    // Simulate frontend validation response
-    setTimeout(() => {
+    try {
+      const { error } = await resetPassword(email)
+      if (error) {
+        setServerError(error.message)
+      } else {
+        setSuccessMessage(
+          'Password reset instructions have been sent to your email address.'
+        )
+      }
+    } catch (err: any) {
+      setServerError(err.message || 'Failed to send password reset email.')
+    } finally {
       setIsSubmitting(false)
-      setDemoMessage(
-        'Demonstration mode: Password reset request validated. Reset functionality will be connected during the authentication integration phase.'
-      )
-    }, 600)
+    }
   }
 
   return (
@@ -59,25 +66,32 @@ export default function ForgotPasswordPage() {
             Enter your registered email address to begin the password reset process.
           </p>
 
-          {/* Demonstration message notification */}
-          {demoMessage && (
+          {/* Server error notification */}
+          {serverError && (
             <div className="mb-5">
-              <AuthAlert type="info" message={demoMessage} />
+              <AuthAlert type="error" message={serverError} />
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate aria-label="Forgot password form">
+          {/* Success notification */}
+          {successMessage && (
+            <div className="mb-5">
+              <AuthAlert type="success" message={successMessage} />
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <TextInput
               id="reset-email"
               type="email"
               label="Email Address"
-              placeholder="Enter your email"
+              placeholder="Enter your registered email"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value)
-                if (error) setError(undefined)
+                if (emailError) setEmailError(undefined)
               }}
-              error={error}
+              error={emailError}
               leftIcon={<Mail size={16} />}
               autoComplete="email"
               disabled={isSubmitting}
@@ -88,17 +102,17 @@ export default function ForgotPasswordPage() {
               size="lg"
               className="w-full justify-center mt-2"
               isLoading={isSubmitting}
-              rightIcon={<ArrowRight size={16} />}
+              leftIcon={<Send size={16} />}
             >
               Send Reset Instructions
             </Button>
           </form>
 
-          {/* Navigation back to login */}
+          {/* Back to sign in link */}
           <div className="mt-6 pt-5 border-t border-slate-800/60 text-center">
             <Link
               to="/login"
-              className="text-sm text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1.5 font-medium"
+              className="text-xs sm:text-sm text-slate-400 hover:text-white font-medium transition-colors inline-flex items-center gap-1.5"
             >
               <ArrowLeft size={14} />
               <span>Back to Sign In</span>

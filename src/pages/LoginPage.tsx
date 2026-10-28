@@ -1,22 +1,26 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { LogIn, Mail, ArrowRight } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { Button, TextInput, PasswordInput, Checkbox } from '@/components/common'
 import AuthBranding from '@/components/auth/AuthBranding'
 import AuthAlert from '@/components/auth/AuthAlert'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function LoginPage() {
   usePageTitle('Sign In')
+  const navigate = useNavigate()
+  const { signIn } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
 
-  // Validation errors
+  // Validation errors & server message
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [demoMessage, setDemoMessage] = useState<string | null>(null)
+  const [serverError, setServerError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {}
@@ -37,21 +41,30 @@ export default function LoginPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setDemoMessage(null)
+    setServerError(null)
+    setSuccessMessage(null)
 
     if (!validate()) return
 
     setIsSubmitting(true)
 
-    // Simulate frontend validation response
-    setTimeout(() => {
+    try {
+      const { error } = await signIn(email, password)
+      if (error) {
+        setServerError(error.message)
+      } else {
+        setSuccessMessage('Successfully signed in! Redirecting...')
+        setTimeout(() => {
+          navigate('/dashboard')
+        }, 800)
+      }
+    } catch (err: any) {
+      setServerError(err.message || 'An unexpected error occurred.')
+    } finally {
       setIsSubmitting(false)
-      setDemoMessage(
-        'Demonstration mode: Form validated successfully. Authentication will be connected in a later phase.'
-      )
-    }, 600)
+    }
   }
 
   return (
@@ -79,10 +92,17 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              {/* Demonstration message notification */}
-              {demoMessage && (
+              {/* Server error notification */}
+              {serverError && (
                 <div className="mb-5">
-                  <AuthAlert type="info" message={demoMessage} />
+                  <AuthAlert type="error" message={serverError} />
+                </div>
+              )}
+
+              {/* Success notification */}
+              {successMessage && (
+                <div className="mb-5">
+                  <AuthAlert type="success" message={successMessage} />
                 </div>
               )}
 
@@ -158,7 +178,7 @@ export default function LoginPage() {
                     to="/register"
                     className="text-blue-400 hover:text-blue-300 font-semibold transition-colors inline-flex items-center gap-1"
                   >
-                    <span>Create an account</span>
+                    Create an account
                     <ArrowRight size={14} />
                   </Link>
                 </p>

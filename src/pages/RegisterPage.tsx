@@ -1,13 +1,16 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { UserPlus, User, Mail, ArrowRight } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { Button, TextInput, PasswordInput, Checkbox } from '@/components/common'
 import AuthBranding from '@/components/auth/AuthBranding'
 import AuthAlert from '@/components/auth/AuthAlert'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function RegisterPage() {
   usePageTitle('Create Your Account')
+  const navigate = useNavigate()
+  const { signUp } = useAuth()
 
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -25,7 +28,8 @@ export default function RegisterPage() {
   }>({})
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [demoMessage, setDemoMessage] = useState<string | null>(null)
+  const [serverError, setServerError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const validate = () => {
     const newErrors: {
@@ -71,21 +75,36 @@ export default function RegisterPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setDemoMessage(null)
+    setServerError(null)
+    setSuccessMessage(null)
 
     if (!validate()) return
 
     setIsSubmitting(true)
 
-    // Simulate frontend validation response
-    setTimeout(() => {
+    try {
+      const { error, user } = await signUp(email, password, fullName)
+      if (error) {
+        setServerError(error.message)
+      } else {
+        if (user && user.identities && user.identities.length === 0) {
+          setServerError('An account with this email address already exists.')
+        } else {
+          setSuccessMessage(
+            'Account created successfully! Check your email to confirm if required, or sign in now.'
+          )
+          setTimeout(() => {
+            navigate('/dashboard')
+          }, 1200)
+        }
+      }
+    } catch (err: any) {
+      setServerError(err.message || 'Registration failed. Please try again.')
+    } finally {
       setIsSubmitting(false)
-      setDemoMessage(
-        'Registration form validated successfully. Account creation will be available after authentication integration.'
-      )
-    }, 600)
+    }
   }
 
   return (
@@ -113,14 +132,21 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              {/* Demonstration message notification */}
-              {demoMessage && (
+              {/* Server error notification */}
+              {serverError && (
                 <div className="mb-5">
-                  <AuthAlert type="success" message={demoMessage} />
+                  <AuthAlert type="error" message={serverError} />
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4" noValidate aria-label="Registration form">
+              {/* Success notification */}
+              {successMessage && (
+                <div className="mb-5">
+                  <AuthAlert type="success" message={successMessage} />
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-3.5" noValidate aria-label="Registration form">
                 {/* Full Name */}
                 <TextInput
                   id="register-fullname"
@@ -155,18 +181,17 @@ export default function RegisterPage() {
                   disabled={isSubmitting}
                 />
 
-                {/* Password */}
+                {/* Password with strength indicator */}
                 <PasswordInput
                   id="register-password"
                   label="Password"
-                  placeholder="Create a password"
+                  placeholder="Create a strong password"
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value)
                     if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }))
                   }}
                   error={errors.password}
-                  hint="Minimum 8 characters"
                   autoComplete="new-password"
                   disabled={isSubmitting}
                 />
@@ -175,7 +200,7 @@ export default function RegisterPage() {
                 <PasswordInput
                   id="register-confirm-password"
                   label="Confirm Password"
-                  placeholder="Confirm your password"
+                  placeholder="Re-enter your password"
                   value={confirmPassword}
                   onChange={(e) => {
                     setConfirmPassword(e.target.value)
@@ -186,11 +211,22 @@ export default function RegisterPage() {
                   disabled={isSubmitting}
                 />
 
-                {/* Terms and Conditions checkbox */}
-                <div className="pt-1">
+                {/* Terms and conditions checkbox */}
+                <div>
                   <Checkbox
                     id="agree-terms"
-                    label="I agree to the Terms and Conditions."
+                    label={
+                      <span className="text-slate-400 text-xs sm:text-sm">
+                        I agree to the{' '}
+                        <a href="#" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">
+                          Terms &amp; Conditions
+                        </a>{' '}
+                        and{' '}
+                        <a href="#" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">
+                          Privacy Policy
+                        </a>
+                      </span>
+                    }
                     checked={agreeTerms}
                     onChange={(checked) => {
                       setAgreeTerms(checked)
@@ -214,8 +250,8 @@ export default function RegisterPage() {
                 </Button>
               </form>
 
-              {/* Navigation link to login */}
-              <div className="mt-8 pt-6 border-t border-slate-800/60 text-center">
+              {/* Navigation link to sign in */}
+              <div className="mt-6 pt-5 border-t border-slate-800/60 text-center">
                 <p className="text-slate-400 text-sm">
                   Already have an account?{' '}
                   <Link

@@ -73,6 +73,10 @@ const router = createBrowserRouter([
     element: <CodingLayout />,
   },
   {
+    path: '/workspace/:id',
+    element: <CodingLayout />,
+  },
+  {
     path: '*',
     element: <NotFoundPage />,
   },

@@ -11,8 +11,11 @@ import {
   Menu,
   X,
   ChevronRight,
+  LogOut,
+  User,
 } from 'lucide-react'
 import ThemeToggle from '@/components/common/ThemeToggle'
+import { useAuth } from '@/hooks/useAuth'
 
 const navLinks = [
   { to: '/', label: 'Home', icon: null },
@@ -29,6 +32,7 @@ const baseLinkClass =
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     const handler = () => setIsScrolled(window.scrollY > 12)
@@ -80,19 +84,43 @@ export default function Navbar() {
         {/* Desktop auth actions + Theme toggle */}
         <div className="hidden lg:flex items-center gap-2.5 shrink-0">
           <ThemeToggle size="sm" />
-          <NavLink
-            to="/login"
-            className="px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white transition-colors duration-150"
-          >
-            Sign In
-          </NavLink>
-          <NavLink
-            to="/register"
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-md text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-200"
-          >
-            Get Started
-            <ChevronRight size={14} />
-          </NavLink>
+          {user ? (
+            <div className="flex items-center gap-2">
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-950/60 border border-blue-800/40 text-blue-300 text-xs font-medium hover:border-blue-700/60 transition-colors"
+              >
+                <User size={13} className="text-blue-400" />
+                <span className="max-w-[130px] truncate">
+                  {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                </span>
+              </Link>
+              <button
+                onClick={() => signOut()}
+                className="p-1.5 rounded-md text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition-colors"
+                title="Sign Out"
+                aria-label="Sign Out"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          ) : (
+            <>
+              <NavLink
+                to="/login"
+                className="px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white transition-colors duration-150"
+              >
+                Sign In
+              </NavLink>
+              <NavLink
+                to="/register"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-md text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-200"
+              >
+                Get Started
+                <ChevronRight size={14} />
+              </NavLink>
+            </>
+          )}
         </div>
 
         {/* Mobile menu toggle & Theme toggle */}
@@ -144,21 +172,44 @@ export default function Navbar() {
               <div className="my-2 border-t border-slate-800/80" />
 
               <div className="flex flex-col gap-2 pt-1">
-                <NavLink
-                  to="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="px-3 py-2 text-center text-sm font-medium text-slate-300 hover:text-white rounded-md hover:bg-slate-900 border border-slate-800"
-                >
-                  Sign In
-                </NavLink>
-                <NavLink
-                  to="/register"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-violet-600 shadow-md shadow-blue-500/20"
-                >
-                  Get Started
-                  <ChevronRight size={14} />
-                </NavLink>
+                {user ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 p-2 rounded-md bg-blue-950/40 border border-blue-900/40 text-blue-300 text-xs">
+                      <User size={14} className="text-blue-400" />
+                      <span className="truncate">
+                        {user.user_metadata?.full_name || user.email}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        signOut()
+                        setMobileOpen(false)
+                      }}
+                      className="flex items-center justify-center gap-1.5 px-3 py-2 text-center text-sm font-medium text-rose-300 hover:text-rose-200 rounded-md bg-rose-950/40 border border-rose-900/50"
+                    >
+                      <LogOut size={14} />
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <NavLink
+                      to="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="px-3 py-2 text-center text-sm font-medium text-slate-300 hover:text-white rounded-md hover:bg-slate-900 border border-slate-800"
+                    >
+                      Sign In
+                    </NavLink>
+                    <NavLink
+                      to="/register"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-violet-600 shadow-md shadow-blue-500/20"
+                    >
+                      Get Started
+                      <ChevronRight size={14} />
+                    </NavLink>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
